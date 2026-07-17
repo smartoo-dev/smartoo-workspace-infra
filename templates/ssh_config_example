@@ -1,0 +1,13 @@
+# Шаблон конфигурации SSH (~/.ssh/config) для доступа к Smartoo Workspace
+# Включает обход блокировок ТСПУ через локальный SOCKS5 и игнорирование системного ssh-agent
+
+Host code.smartoo.dev
+    # Указываем путь к локальному приватному ключу
+    IdentityFile ~/.ssh/dev
+    
+    # Игнорируем GNOME Keyring и другие локальные агенты для предотвращения ошибки 'agent refused operation'
+    IdentitiesOnly yes
+    
+    # Поднимаем туннель Cloudflare, заворачивая его в локальный SOCKS5 (Xray/sing-box) для обхода DPI
+    # Важно: используется системная утилита env для корректной передачи переменной ALL_PROXY
+    ProxyCommand env ALL_PROXY=socks5://127.0.0.1:10808 cloudflared access ssh --hostname %h
